@@ -44,9 +44,6 @@ class WalletMenuController:
 
   @FXML
   def initialize(): Unit =
-    println(s"receiveButton: $receiveButton")
-    println(s"sendButton: $sendButton")
-    println(s"ethAmount: $ethAmount")
     receiveButton.setOnAction(_ => handleCopyAddress())
 
   private def handleCopyAddress(): Unit =
