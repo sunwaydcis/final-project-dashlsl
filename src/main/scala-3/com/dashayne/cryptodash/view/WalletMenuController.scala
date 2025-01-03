@@ -33,10 +33,12 @@ class WalletMenuController:
 
   private val apiClient = new ApiClient()
   private val scheduler = Executors.newScheduledThreadPool(1)
+  private var fullWalletAddress: String = "" // Store the full address for copying
 
   def setWalletDetails(name: String, address: String): Unit =
     walletName.setText(name)
     walletAddress.setText(formatAddress(address))
+    fullWalletAddress = address // Save the full address for copying
     fetchAndSetEthereumBalance(address)
     schedulePeriodicBalanceCheck(address)
 
@@ -49,8 +51,9 @@ class WalletMenuController:
 
   private def handleCopyAddress(): Unit =
     val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-    val selection = new StringSelection(walletAddress.getText)
+    val selection = new StringSelection(fullWalletAddress) // Copy the full address
     clipboard.setContents(selection, null)
+    println(s"Copied address to clipboard: $fullWalletAddress")
 
   private def fetchAndSetEthereumBalance(address: String): Unit =
     Future:
