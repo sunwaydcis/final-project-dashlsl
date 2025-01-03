@@ -1,5 +1,7 @@
 package com.dashayne.cryptodash
 
+import com.dashayne.cryptodash.model.WalletManager
+import com.dashayne.cryptodash.view.WalletMenuController
 import javafx.fxml.FXMLLoader
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
@@ -8,30 +10,47 @@ import scalafx.Includes.*
 import scalafx.scene as sfxs
 import javafx.scene as jfxs
 import scalafx.collections.ObservableBuffer
+import scala.util.{Try, Success, Failure}
+import java.io.File
 
 object MainApp extends JFXApp3:
-  // Window root pane
+
   var roots: Option[sfxs.layout.AnchorPane] = None
 
   override def start(): Unit =
+    try
+      val walletDirectory = new File(System.getProperty("user.home") + "/cryptodash_wallets")
 
-    val rootResource = getClass.getResource("/com/dashayne/cryptodash/view/RootLayout.fxml")
-    if (rootResource == null) throw new IllegalStateException("RootLayout FXML file not found.")
+      // Determine which FXML to load based on wallet existence
+      if walletDirectory.exists() && walletDirectory.listFiles().exists(_.getName.endsWith(".json")) then
+        println("Wallet found. Loading WalletMenu.fxml...")
+        val loader = new FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/WalletMenu.fxml"))
+        val root = loader.load[jfxs.layout.AnchorPane]()
+        val controller = loader.getController[WalletMenuController]
 
-    val testResponseResource = getClass.getResource("/com/dashayne/cryptodash/view/TestResponse.fxml")
-    if (testResponseResource == null) throw new IllegalStateException("TestResponse FXML file not found.")
+        // Load wallet details
+        val walletFile = walletDirectory.listFiles().find(_.getName.endsWith(".json")).get
+        val credentials = WalletManager.loadWallet("securepassword", walletFile.getName).get
+        controller.setWalletDetails(WalletManager.getWalletName(walletFile.getName).get, credentials.getAddress)
 
-    val loader = new FXMLLoader(rootResource)
-    loader.load()
+        roots = Option(root)
+      else
+        println("No wallet found. Loading CreateWallet.fxml...")
+        val loader = new FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/CreateWallet.fxml"))
+        val root = loader.load[jfxs.layout.AnchorPane]()
+        roots = Option(root)
 
-    roots = Option(loader.getRoot[jfxs.layout.AnchorPane])
-
-    // Load TestResponse.fxml into the primary stage
-    val testResponseLoader = new FXMLLoader(testResponseResource)
-    val testResponseRoot = testResponseLoader.load[jfxs.layout.AnchorPane]
-
-    stage = new PrimaryStage():
-      title = "CryptoDash"
-      resizable = false
-      scene = new Scene():
-        root = testResponseRoot
+      // Ensure roots is set and attach it to the scene
+      roots match
+        case Some(rootPane) =>
+          println("Loading root pane into the scene...")
+          stage = new PrimaryStage:
+            title = "CryptoDash"
+            scene = new Scene:
+              root = rootPane
+        case None =>
+          throw new IllegalStateException("Failed to initialize root pane!")
+    catch
+      case ex: Exception =>
+        ex.printStackTrace()
+        System.err.println("Failed to start application due to an error.")

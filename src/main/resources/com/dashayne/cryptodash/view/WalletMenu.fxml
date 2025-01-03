@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" prefHeight="600.0" prefWidth="600.0"
+            style="-fx-background-color: #111111;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dashayne.cryptodash.view.WalletMenuController" stylesheets="@styles.css">
+   <Circle layoutX="158.0" layoutY="141.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" AnchorPane.leftAnchor="32.0"
+           AnchorPane.topAnchor="32.0">
+      <fill>
+         <LinearGradient endX="1.0" endY="1.0">
+            <stops>
+               <Stop>
+                  <color>
+                     <Color red="1.0" green="0.8645833134651184" blue="0.0972222238779068"/>
+                  </color>
+               </Stop>
+               <Stop offset="1.0">
+                  <color>
+                     <Color green="1.0" blue="0.06666667014360428"/>
+                  </color>
+               </Stop>
+            </stops>
+         </LinearGradient>
+      </fill>
+   </Circle>
+   <Label fx:id="walletName" layoutX="81.0" layoutY="32.0" text="Wallet Name" textFill="#5f5f5f">
+      <font>
+         <Font name="Arial Bold" size="16.0"/>
+      </font>
+   </Label>
+   <Label fx:id="walletAddress" alignment="BOTTOM_LEFT" layoutX="81.0" layoutY="52.0" text="0x0000...00000"
+          textFill="#5f5f5f">
+      <font>
+         <Font name="Arial" size="16.0"/>
+      </font>
+   </Label>
+   <Button fx:id="sendButton" layoutX="499.0" layoutY="28.0" maxHeight="68.0" maxWidth="68.0" minHeight="68.0"
+           minWidth="68.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="68.0"
+           style="-fx-background-color: #181818; -fx-background-radius: 16px;" styleClass="hover-button"
+           AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="32.0">
+      <graphic>
+         <SVGPath fx:id="paperPlaneIcon"
+                  content="M24 0l-6 22-8.129-7.239 7.802-8.234-10.458 7.227-7.215-1.754 24-12zm-15 16.668v7.332l3.258-4.431-3.258-2.901z"
+                  styleClass="icon-style"/>
+      </graphic>
+      <font>
+         <Font size="20.0"/>
+      </font>
+   </Button>
+   <Button fx:id="receiveButton" layoutX="418.0" layoutY="32.0" maxHeight="68.0" maxWidth="68.0" minHeight="68.0"
+           minWidth="68.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="68.0"
+           style="-fx-background-color: #181818; -fx-background-radius: 16px; -fx-cursor: hand;"
+           styleClass="hover-button">
+      <graphic>
+         <SVGPath fx:id="downloadIcon" content="M12 21l-8-9h6v-12h4v12h6l-8 9zm9-1v2h-18v-2h-2v4h22v-4h-2z"
+                  styleClass="icon-style"/>
+      </graphic>
+      <font>
+         <Font size="20.0"/>
+      </font>
+   </Button>
+   <Label fx:id="usdAmount" alignment="CENTER" layoutX="-1.0" layoutY="189.0" prefHeight="59.0" prefWidth="600.0"
+          text="\$23,000.00" textAlignment="CENTER" textFill="#e033bb">
+      <font>
+         <Font name="Arial Bold" size="52.0"/>
+      </font>
+   </Label>
+   <Label fx:id="ethAmount" alignment="CENTER" layoutY="148.0" prefHeight="59.0" prefWidth="600.0" text="0.000001 ETH"
+          textAlignment="CENTER" textFill="#494949">
+      <font>
+         <Font name="Arial Bold" size="24.0"/>
+      </font>
+   </Label>
+</AnchorPane>

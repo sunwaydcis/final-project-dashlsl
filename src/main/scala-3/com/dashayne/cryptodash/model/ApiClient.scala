@@ -37,5 +37,32 @@ class ApiClient:
     val response = request.send(backend)
     response.body // Return the response body (Right for success, Left for error)
 
+
+  private val baseUrl = "https://api.g.alchemy.com/prices/v1/tokens/by-symbol"
+
+  def getEthPrice(): Either[String, java.math.BigDecimal] =
+    val apiUrl = s"$baseUrl?symbols=ETH"
+    val headers = Map(
+      "accept" -> "application/json",
+      "Authorization" -> "Bearer v4Q7lRu_eLH3PV_jDZFU823z8Xk9oDL4"
+    )
+
+    val request = basicRequest.get(uri"$apiUrl").headers(headers)
+    val response = request.send(backend)
+
+    response.body match
+      case Right(body) =>
+        try
+          val json = ujson.read(body)
+          // Navigate through the structure to find the price in USD
+          val price = BigDecimal(
+            json("data")(0)("prices")(0)("value").str
+          ).bigDecimal
+          Right(price)
+        catch
+          case ex: Exception => Left(s"Failed to parse JSON: ${ex.getMessage}")
+      case Left(error) => Left(error)
+
+
   // Cleanup resources (if necessary)
   def close(): Unit = backend.close()

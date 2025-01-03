@@ -1,0 +1,35 @@
+/* Button styling for the "Create Wallet" button */
+.create-wallet-button {
+    -fx-background-color: #181818;
+    -fx-background-radius: 16px;
+    -fx-pref-height: 60px;
+    -fx-pref-width: 355px;
+    -fx-text-fill: #5f5f5f;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+/* General styling for other buttons */
+.hover-button {
+    -fx-background-color: #181818;
+    -fx-background-radius: 16px;
+    -fx-border-width: 0; /* No border by default */
+    -fx-border-color: transparent;
+    -fx-border-radius: 16px;
+    -fx-cursor: hand; /* Hand cursor on hover */
+}
+
+/* Hover effect for buttons */
+.hover-button:hover {
+    -fx-border-width: 1px; /* Adds a 1px border */
+    -fx-border-color: #E033BB; /* Border color on hover */
+}
+
+.hover-button:hover > .icon-style {
+    -fx-fill: #E033BB; /* Change fill color on hover */
+}
+
+/* General styling for SVG icons */
+.icon-style {
+    -fx-fill: #494949; /* Default fill color for icons */
+}
