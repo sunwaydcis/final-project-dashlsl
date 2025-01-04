@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
@@ -10,73 +15,147 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" prefHeight="600.0" prefWidth="600.0"
-            style="-fx-background-color: #111111;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dashayne.cryptodash.view.WalletMenuController" stylesheets="@styles.css">
-   <Circle layoutX="158.0" layoutY="141.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" AnchorPane.leftAnchor="32.0"
-           AnchorPane.topAnchor="32.0">
-      <fill>
-         <LinearGradient endX="1.0" endY="1.0">
-            <stops>
-               <Stop>
-                  <color>
-                     <Color red="1.0" green="0.8645833134651184" blue="0.0972222238779068"/>
-                  </color>
-               </Stop>
-               <Stop offset="1.0">
-                  <color>
-                     <Color green="1.0" blue="0.06666667014360428"/>
-                  </color>
-               </Stop>
-            </stops>
-         </LinearGradient>
-      </fill>
-   </Circle>
-   <Label fx:id="walletName" layoutX="81.0" layoutY="32.0" text="Wallet Name" textFill="#5f5f5f">
-      <font>
-         <Font name="Arial Bold" size="16.0"/>
-      </font>
-   </Label>
-   <Label fx:id="walletAddress" alignment="BOTTOM_LEFT" layoutX="81.0" layoutY="52.0" text="0x0000...00000"
-          textFill="#5f5f5f">
-      <font>
-         <Font name="Arial" size="16.0"/>
-      </font>
-   </Label>
-   <Button fx:id="sendButton" layoutX="499.0" layoutY="28.0" maxHeight="68.0" maxWidth="68.0" minHeight="68.0"
-           minWidth="68.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="68.0"
-           style="-fx-background-color: #181818; -fx-background-radius: 16px;" styleClass="hover-button"
-           AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="32.0">
-      <graphic>
-         <SVGPath fx:id="paperPlaneIcon"
-                  content="M24 0l-6 22-8.129-7.239 7.802-8.234-10.458 7.227-7.215-1.754 24-12zm-15 16.668v7.332l3.258-4.431-3.258-2.901z"
-                  styleClass="icon-style"/>
-      </graphic>
-      <font>
-         <Font size="20.0"/>
-      </font>
-   </Button>
-   <Button fx:id="receiveButton" layoutX="418.0" layoutY="32.0" maxHeight="68.0" maxWidth="68.0" minHeight="68.0"
-           minWidth="68.0" mnemonicParsing="false" prefHeight="68.0" prefWidth="68.0"
-           style="-fx-background-color: #181818; -fx-background-radius: 16px; -fx-cursor: hand;"
-           styleClass="hover-button">
-      <graphic>
-         <SVGPath fx:id="downloadIcon" content="M12 21l-8-9h6v-12h4v12h6l-8 9zm9-1v2h-18v-2h-2v4h22v-4h-2z"
-                  styleClass="icon-style"/>
-      </graphic>
-      <font>
-         <Font size="20.0"/>
-      </font>
-   </Button>
-   <Label fx:id="usdAmount" alignment="CENTER" layoutX="-1.0" layoutY="189.0" prefHeight="59.0" prefWidth="600.0"
-          text="\$23,000.00" textAlignment="CENTER" textFill="#e033bb">
-      <font>
-         <Font name="Arial Bold" size="52.0"/>
-      </font>
-   </Label>
-   <Label fx:id="ethAmount" alignment="CENTER" layoutY="148.0" prefHeight="59.0" prefWidth="600.0" text="0.000001 ETH"
-          textAlignment="CENTER" textFill="#494949">
-      <font>
-         <Font name="Arial Bold" size="24.0"/>
-      </font>
-   </Label>
+<AnchorPane maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="346.0" prefHeight="600.0" prefWidth="346.0" style="-fx-background-color: #111111;" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dashayne.cryptodash.view.WalletMenuController">
+   <VBox layoutY="304.0" prefHeight="296.0" prefWidth="346.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <children>
+         <VBox fx:id="topContainer" prefHeight="200.0" prefWidth="334.0" spacing="24.0" styleClass="top-container">
+            <children>
+               <HBox spacing="10.0">
+                  <children>
+                     <Circle radius="20.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0">
+                        <fill>
+                           <LinearGradient endX="1.0" endY="1.0">
+                              <stops>
+                                 <Stop>
+                                    <color>
+                                       <Color red="1.0" green="0.9605714082717896" blue="0.5400000214576721" />
+                                    </color>
+                                 </Stop>
+                                 <Stop offset="1.0">
+                                    <color>
+                                       <Color red="1.0" green="0.1899999976158142" blue="0.4522857069969177" />
+                                    </color>
+                                 </Stop>
+                              </stops>
+                           </LinearGradient>
+                        </fill>
+                     </Circle>
+                     <VBox prefHeight="40.0" prefWidth="263.0" HBox.hgrow="ALWAYS">
+                        <children>
+                           <Label fx:id="walletName" text="Wallet Name" textFill="#eeeeee">
+                              <font>
+                                 <Font name="Open Sauce One Bold" size="16.0" />
+                              </font>
+                           </Label>
+                           <Label fx:id="walletAddress" alignment="BOTTOM_LEFT" text="0x0000...00000" textFill="#eeeeee">
+                              <font>
+                                 <Font name="Open Sauce One Regular" size="16.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
+                  </children>
+               </HBox>
+               <VBox prefHeight="49.0" prefWidth="314.0" spacing="2.0">
+                  <children>
+                     <Label alignment="CENTER" prefHeight="59.0" prefWidth="600.0" text="Balance" textAlignment="CENTER" textFill="#eeeeee" VBox.vgrow="ALWAYS">
+                        <font>
+                           <Font name="Open Sauce One Regular" size="16.0" />
+                        </font>
+                     </Label>
+                     <Label fx:id="usdAmount" alignment="CENTER" prefHeight="59.0" prefWidth="600.0" text="\$00.00" textAlignment="CENTER" textFill="#eeeeee" VBox.vgrow="ALWAYS">
+                        <font>
+                           <Font name="Open Sauce One Bold" size="40.0" />
+                        </font>
+                     </Label>
+                     <Label fx:id="ethAmount" alignment="CENTER" prefHeight="59.0" prefWidth="600.0" text="0.000 ETH" textAlignment="CENTER" textFill="#eeeeee" VBox.vgrow="ALWAYS">
+                        <font>
+                           <Font name="Open Sauce One Regular" size="18.0" />
+                        </font>
+                     </Label>
+                  </children>
+               </VBox>
+               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                  <children>
+                     <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="8.0" HBox.hgrow="ALWAYS">
+                        <children>
+                           <Button fx:id="sendButton" maxHeight="157.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="147.0" style="-fx-background-radius: 16px;" styleClass="hover-button" textFill="#00000025">
+                              <graphic>
+                                 <SVGPath fx:id="paperPlaneIcon" content="M24 0l-6 22-8.129-7.239 7.802-8.234-10.458 7.227-7.215-1.754 24-12zm-15 16.668v7.332l3.258-4.431-3.258-2.901z" styleClass="icon-style" />
+                              </graphic>
+                              <font>
+                                 <Font size="20.0" />
+                              </font>
+                           </Button>
+                           <Label fx:id="walletAddress1" alignment="CENTER" prefHeight="20.0" prefWidth="161.0" text="Send" textFill="#eeeeee" VBox.vgrow="ALWAYS">
+                              <font>
+                                 <Font name="Open Sauce One Regular" size="14.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
+                     <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="8.0" HBox.hgrow="ALWAYS">
+                        <children>
+                           <Button fx:id="receiveButton" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 16px; -fx-cursor: hand;" styleClass="hover-button" textFill="#00000050">
+                              <graphic>
+                                 <SVGPath fx:id="downloadIcon" content="M12 21l-8-9h6v-12h4v12h6l-8 9zm9-1v2h-18v-2h-2v4h22v-4h-2z" styleClass="icon-style" />
+                              </graphic>
+                              <font>
+                                 <Font size="20.0" />
+                              </font>
+                           </Button>
+                           <Label fx:id="walletAddress11" alignment="CENTER" prefHeight="20.0" prefWidth="161.0" text="Recieve" textFill="#eeeeee">
+                              <font>
+                                 <Font name="Open Sauce One Regular" size="14.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
+                     <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="8.0">
+                        <children>
+                           <Button fx:id="exportButton" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 16px; -fx-cursor: hand;" styleClass="hover-button">
+                              <graphic>
+                                 <SVGPath content="M16 2v7h-2v-5h-12v16h12v-5h2v7h-16v-20h16zm2 9v-4l6 5-6 5v-4h-10v-2h10z" styleClass="icon-style" />
+                              </graphic>
+                              <font>
+                                 <Font size="20.0" />
+                              </font>
+                           </Button>
+                           <Label fx:id="walletAddress111" alignment="CENTER" prefHeight="20.0" prefWidth="161.0" text="Export" textFill="#eeeeee">
+                              <font>
+                                 <Font name="Open Sauce One Regular" size="14.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
+                  </children>
+               </HBox>
+            </children>
+            <padding>
+               <Insets bottom="24.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+         </VBox>
+         <VBox prefHeight="200.0" prefWidth="100.0" spacing="16.0" VBox.vgrow="ALWAYS">
+            <VBox.margin>
+               <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </VBox.margin>
+            <children>
+               <HBox prefHeight="60.0" prefWidth="0.0" styleClass="crypto-token-tile">
+                  <children>
+                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="https://cryptologos.cc/logos/ethereum-eth-logo.png" />
+                        </image>
+                        <HBox.margin>
+                           <Insets />
+                        </HBox.margin>
+                     </ImageView>
+                  </children>
+                  <padding>
+                     <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                  </padding></HBox>
+            </children>
+         </VBox>
+      </children>
+   </VBox>
 </AnchorPane>

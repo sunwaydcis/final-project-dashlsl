@@ -2,16 +2,23 @@ package com.dashayne.cryptodash.view
 
 import javafx.fxml.FXML
 import javafx.scene.control.{Label, Button}
+import javafx.scene.layout.VBox
+import javafx.animation.TranslateTransition
+import javafx.util.Duration
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Success, Failure}
-import com.dashayne.cryptodash.model.{BalancesManager, ApiClient}
+import com.dashayne.cryptodash.model.{BalancesManager, ApiClient, WalletManager}
 import java.math.BigDecimal
+import java.io.File
 import java.util.concurrent.{Executors, TimeUnit}
 
 class WalletMenuController:
+
+  @FXML
+  private var topContainer: VBox = _
 
   @FXML
   private var walletName: Label = _
@@ -31,6 +38,9 @@ class WalletMenuController:
   @FXML
   private var sendButton: Button = _
 
+  @FXML
+  private var exportButton: Button = _
+
   private val apiClient = new ApiClient()
   private val scheduler = Executors.newScheduledThreadPool(1)
   private var fullWalletAddress: String = "" // Store the full address for copying
@@ -44,13 +54,51 @@ class WalletMenuController:
 
   @FXML
   def initialize(): Unit =
+    playSlideDownAnimation()
     receiveButton.setOnAction(_ => handleCopyAddress())
+    exportButton.setOnAction(_ => handleExportPrivateKey())
+
+  private def playSlideDownAnimation(): Unit =
+    // Start with the top container off-screen
+    topContainer.setTranslateY(-topContainer.getPrefHeight)
+
+    // Create a TranslateTransition for the slide-down effect
+    val slideDown = new TranslateTransition()
+    slideDown.setNode(topContainer)
+    slideDown.setDuration(Duration.millis(1500)) // Animation duration (1.5 seconds)
+    slideDown.setFromY(-topContainer.getPrefHeight) // Start position
+    slideDown.setToY(0) // Final position (on-screen)
+    slideDown.setCycleCount(1) // Play only once
+    slideDown.setAutoReverse(false)
+
+    // Play the animation
+    slideDown.play()
 
   private def handleCopyAddress(): Unit =
     val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
     val selection = new StringSelection(fullWalletAddress) // Copy the full address
     clipboard.setContents(selection, null)
     println(s"Copied address to clipboard: $fullWalletAddress")
+
+  private def handleExportPrivateKey(): Unit =
+    println(s"Exporting private key for wallet address: $fullWalletAddress")
+    val walletFile = findWalletFile(fullWalletAddress)
+    walletFile match
+      case Some(file) =>
+        WalletManager.loadWallet("securepassword", file.getName) match
+          case Success(credentials) =>
+            val privateKey = credentials.getEcKeyPair.getPrivateKey.toString(16)
+            println(s"Private Key: $privateKey")
+          case Failure(ex) =>
+            println(s"Failed to load wallet: ${ex.getMessage}")
+      case None =>
+        println(s"Wallet file not found for address: $fullWalletAddress")
+
+  private def findWalletFile(address: String): Option[File] =
+    val walletDir = new File(System.getProperty("user.home") + "/cryptodash_wallets")
+    if walletDir.exists() && walletDir.isDirectory then
+      walletDir.listFiles().find(file => file.getName.contains(address.drop(2))) // Match address without "0x"
+    else None
 
   private def fetchAndSetEthereumBalance(address: String): Unit =
     Future:
@@ -62,7 +110,6 @@ class WalletMenuController:
             val formattedBalance = f"$balance%.6f ETH"
             javafx.application.Platform.runLater:
               () => ethAmount.setText(formattedBalance)
-
             fetchAndDisplayUSDValue(balance)
           case Failure(ex) =>
             println(s"Failed to fetch Ethereum balance: ${ex.getMessage}")
@@ -82,6 +129,7 @@ class WalletMenuController:
           case Right(price) =>
             val totalValue = BalancesManager.calculateTotalValueInUSD(balance, price)
             val formattedValue = f"$$${totalValue}%.2f"
+            println(price)
             javafx.application.Platform.runLater:
               () => usdAmount.setText(formattedValue)
           case Left(error) =>
@@ -98,8 +146,8 @@ class WalletMenuController:
       () =>
         javafx.application.Platform.runLater:
           () => fetchAndSetEthereumBalance(address),
-      20, // Initial delay
-      20, // Period
+      5, // Initial delay
+      5, // Period
       TimeUnit.SECONDS
     )
 

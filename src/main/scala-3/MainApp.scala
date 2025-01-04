@@ -45,7 +45,7 @@ object MainApp extends JFXApp3:
         case Some(rootPane) =>
           println("Loading root pane into the scene...")
           stage = new PrimaryStage:
-            title = "CryptoDash"
+            title = "Dash Wallet"
             scene = new Scene:
               root = rootPane
         case None =>

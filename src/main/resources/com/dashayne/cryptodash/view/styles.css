@@ -11,7 +11,7 @@
 
 /* General styling for other buttons */
 .hover-button {
-    -fx-background-color: #181818;
+    -fx-background-color: #00000025;
     -fx-background-radius: 16px;
     -fx-border-width: 0; /* No border by default */
     -fx-border-color: transparent;
@@ -21,15 +21,32 @@
 
 /* Hover effect for buttons */
 .hover-button:hover {
-    -fx-border-width: 1px; /* Adds a 1px border */
-    -fx-border-color: #E033BB; /* Border color on hover */
-}
-
-.hover-button:hover > .icon-style {
-    -fx-fill: #E033BB; /* Change fill color on hover */
+    -fx-background-color: #00000050;
 }
 
 /* General styling for SVG icons */
 .icon-style {
-    -fx-fill: #494949; /* Default fill color for icons */
+    -fx-fill: #eeeeee; /* Default fill color for icons */
+    -fx-scale-x: 0.75; /* Adjust scaling to make the SVG fit 30px */
+    -fx-scale-y: 0.75; /* Adjust scaling to make the SVG fit 30px */
+}
+
+.top-container {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #7F00FF, #E100FF); /* Gradient from purple to light purple */
+    -fx-background-radius: 0 0 30px 30px; /* Rounded corners at the bottom */
+    -fx-border-radius: 0 0 30px 30px; /* Border follows the rounded background */
+    -fx-background-insets: 0; /* Ensure no insets affect the background */
+}
+
+.crypto-token-tile {
+    -fx-background-color: #191919;
+    -fx-border-width: 1px;
+    -fx-border-color: #191919;
+    -fx-background-radius: 8px; /* Rounded corners at the bottom */
+    -fx-border-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.crypto-token-tile:hover {
+    -fx-border-color: #232323;
 }
