@@ -67,6 +67,8 @@ class CreateWalletController:
     val password = "securepassword"
     WalletManager.loadWallet(password, walletFileName) match
       case Success(credentials) =>
+        WalletManager.setLoggedInWalletFileName(walletFileName)
+        WalletManager.setLoggedInWalletAddress(credentials.getAddress)
         val walletName = WalletManager.getWalletName(walletFileName).getOrElse("Unknown Wallet")
         val loader = new javafx.fxml.FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/WalletMenu.fxml"))
         val root = loader.load[javafx.scene.Parent]()

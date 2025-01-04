@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -113,13 +114,13 @@
                         <children>
                            <Button fx:id="exportButton" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 16px; -fx-cursor: hand;" styleClass="hover-button">
                               <graphic>
-                                 <SVGPath content="M16 2v7h-2v-5h-12v16h12v-5h2v7h-16v-20h16zm2 9v-4l6 5-6 5v-4h-10v-2h10z" styleClass="icon-style" />
+                                 <SVGPath content="M12.451 17.337l-2.451 2.663h-2v2h-2v2h-6v-1.293l7.06-7.06c-.214-.26-.413-.533-.599-.815l-6.461 6.461v-2.293l6.865-6.949c1.08 2.424 3.095 4.336 5.586 5.286zm11.549-9.337c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-3-3c0-1.104-.896-2-2-2s-2 .896-2 2 .896 2 2 2 2-.896 2-2z" styleClass="icon-style" />
                               </graphic>
                               <font>
                                  <Font size="20.0" />
                               </font>
                            </Button>
-                           <Label fx:id="walletAddress111" alignment="CENTER" prefHeight="20.0" prefWidth="161.0" text="Export" textFill="#eeeeee">
+                           <Label fx:id="export" alignment="CENTER" prefHeight="20.0" prefWidth="161.0" text="Export" textFill="#eeeeee">
                               <font>
                                  <Font name="Open Sauce One Regular" size="14.0" />
                               </font>
@@ -150,11 +151,14 @@
                <Insets bottom="24.0" left="16.0" right="16.0" top="16.0" />
             </padding>
          </VBox>
-         <VBox fx:id="tokenList" prefHeight="200.0" prefWidth="100.0" spacing="16.0" VBox.vgrow="ALWAYS">
-            <VBox.margin>
+         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="318.0" prefWidth="350.0" style="-fx-background-color: #111111;" vbarPolicy="NEVER">
+            <content>
+               <VBox fx:id="tokenList" spacing="8.0" />
+            </content>
+            <padding>
                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-            </VBox.margin>
-         </VBox>
+            </padding>
+         </ScrollPane>
       </children>
    </VBox>
 </AnchorPane>

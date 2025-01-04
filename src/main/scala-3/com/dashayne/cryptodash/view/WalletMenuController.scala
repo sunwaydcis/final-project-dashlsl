@@ -11,11 +11,13 @@ import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-import com.dashayne.cryptodash.model.{BalancesManager, Token}
+import com.dashayne.cryptodash.model.{BalancesManager, Token, WalletManager}
 import javafx.fxml.FXMLLoader
 import javafx.scene.{Parent, Scene}
 import javafx.stage.Stage
 import javafx.application.Platform
+import javafx.scene.input.Clipboard
+import javafx.scene.input.ClipboardContent
 
 class WalletMenuController:
 
@@ -45,7 +47,11 @@ class WalletMenuController:
   private var tokens: Seq[Token] = Seq(
     Token("Ethereum", "ETH", "https://cryptologos.cc/logos/ethereum-eth-logo.png"),
     Token("Bitcoin", "BTC", "https://cryptologos.cc/logos/bitcoin-btc-logo.png"),
-    Token("Solana", "SOL", "https://cryptologos.cc/logos/solana-sol-logo.png")
+    Token("Solana", "SOL", "https://cryptologos.cc/logos/solana-sol-logo.png"),
+    Token("Pudgy Penguins", "PENGU", "https://s2.coinmarketcap.com/static/img/coins/64x64/34466.png"),
+    Token("XRP", "XRP", "https://cryptologos.cc/logos/xrp-xrp-logo.png"),
+    Token("Dogecoin", "DOGE", "https://cryptologos.cc/logos/dogecoin-doge-logo.png"),
+    Token("Cardano", "ADA", "https://cryptologos.cc/logos/cardano-ada-logo.png"),
   )
 
   private val tokenTileCache: mutable.Map[String, (HBox, Label)] = mutable.Map()
@@ -64,7 +70,8 @@ class WalletMenuController:
     println("Initializing WalletMenuController...")
     playSlideDownAnimation()
     receiveButton.setOnAction(_ => handleCopyAddress())
-    exportButton.setOnAction(_ => println("Export wallet private key."))
+    sendButton.setOnAction(_ => openSendTransactionView())
+    exportButton.setOnAction(_ => handleExport()) // Update export action
     logoutButton.setOnAction(_ => handleLogout())
 
   private def handleLogout(): Unit =
@@ -75,6 +82,38 @@ class WalletMenuController:
       val stage = logoutButton.getScene.getWindow.asInstanceOf[Stage]
       stage.setScene(new Scene(root))
     })
+
+  private def handleExport(): Unit =
+    println("Exporting private key...")
+    val password = "securepassword" // Replace this with actual logic to get the user's password
+
+    WalletManager.getLoggedInWalletFileName match
+      case Some(walletFileName) =>
+        WalletManager.getPrivateKey(password, walletFileName) match
+          case Success(privateKey) =>
+            val clipboard = Clipboard.getSystemClipboard
+            val content = new ClipboardContent
+            content.putString(privateKey)
+            clipboard.setContent(content)
+            println("Private key copied to clipboard!")
+          case Failure(ex) =>
+            println(s"Failed to export private key: ${ex.getMessage}")
+      case None =>
+        println("No logged-in wallet found.")
+
+  private def openSendTransactionView(): Unit =
+    Platform.runLater(() =>
+      try
+        val loader = new FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/SendTransaction.fxml"))
+        val root: Parent = loader.load()
+        val stage = new Stage()
+        stage.setTitle("Send Transaction")
+        stage.setScene(new Scene(root))
+        stage.show()
+      catch
+        case ex: Exception =>
+          println(s"Failed to open Send Transaction view: ${ex.getMessage}")
+    )
 
   private def playSlideDownAnimation(): Unit =
     topContainer.setTranslateY(-(topContainer.getPrefHeight * 2))
@@ -143,8 +182,8 @@ class WalletMenuController:
           fetchAndSetTokenPrices()
           fetchAndSetEthereumBalance(address)
         }),
-      5,
-      5,
+      0,
+      12,
       java.util.concurrent.TimeUnit.SECONDS
     )
 
