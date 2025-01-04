@@ -3,8 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -15,7 +13,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="346.0" prefHeight="600.0" prefWidth="346.0" style="-fx-background-color: #111111;" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dashayne.cryptodash.view.WalletMenuController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="620.0" minWidth="350.0" prefWidth="350.0" style="-fx-background-color: #111111;" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dashayne.cryptodash.view.WalletMenuController">
    <VBox layoutY="304.0" prefHeight="296.0" prefWidth="346.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
          <VBox fx:id="topContainer" prefHeight="200.0" prefWidth="334.0" spacing="24.0" styleClass="top-container">
@@ -63,7 +61,7 @@
                            <Font name="Open Sauce One Regular" size="16.0" />
                         </font>
                      </Label>
-                     <Label fx:id="usdAmount" alignment="CENTER" prefHeight="59.0" prefWidth="600.0" text="\$00.00" textAlignment="CENTER" textFill="#eeeeee" VBox.vgrow="ALWAYS">
+                     <Label fx:id="usdAmount" alignment="CENTER" prefHeight="59.0" prefWidth="600.0" text="-" textAlignment="CENTER" textFill="#eeeeee" VBox.vgrow="ALWAYS">
                         <font>
                            <Font name="Open Sauce One Bold" size="40.0" />
                         </font>
@@ -128,6 +126,23 @@
                            </Label>
                         </children>
                      </VBox>
+                     <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="8.0">
+                        <children>
+                           <Button fx:id="logoutButton" maxHeight="50.0" maxWidth="50.0" minHeight="50.0" minWidth="50.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" style="-fx-background-radius: 16px; -fx-cursor: hand;" styleClass="hover-button">
+                              <graphic>
+                                 <SVGPath content="M16 2v7h-2v-5h-12v16h12v-5h2v7h-16v-20h16zm2 9v-4l6 5-6 5v-4h-10v-2h10z" styleClass="icon-style" />
+                              </graphic>
+                              <font>
+                                 <Font size="20.0" />
+                              </font>
+                           </Button>
+                           <Label fx:id="Logout" alignment="CENTER" prefHeight="20.0" prefWidth="161.0" text="Logout" textFill="#eeeeee">
+                              <font>
+                                 <Font name="Open Sauce One Regular" size="14.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
                   </children>
                </HBox>
             </children>
@@ -135,26 +150,10 @@
                <Insets bottom="24.0" left="16.0" right="16.0" top="16.0" />
             </padding>
          </VBox>
-         <VBox prefHeight="200.0" prefWidth="100.0" spacing="16.0" VBox.vgrow="ALWAYS">
+         <VBox fx:id="tokenList" prefHeight="200.0" prefWidth="100.0" spacing="16.0" VBox.vgrow="ALWAYS">
             <VBox.margin>
                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
             </VBox.margin>
-            <children>
-               <HBox prefHeight="60.0" prefWidth="0.0" styleClass="crypto-token-tile">
-                  <children>
-                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                           <Image url="https://cryptologos.cc/logos/ethereum-eth-logo.png" />
-                        </image>
-                        <HBox.margin>
-                           <Insets />
-                        </HBox.margin>
-                     </ImageView>
-                  </children>
-                  <padding>
-                     <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-                  </padding></HBox>
-            </children>
          </VBox>
       </children>
    </VBox>

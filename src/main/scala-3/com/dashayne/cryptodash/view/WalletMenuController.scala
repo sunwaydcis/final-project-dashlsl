@@ -1,104 +1,112 @@
 package com.dashayne.cryptodash.view
 
 import javafx.fxml.FXML
-import javafx.scene.control.{Label, Button}
-import javafx.scene.layout.VBox
-import javafx.animation.TranslateTransition
+import javafx.scene.control.{Button, Label}
+import javafx.scene.layout.{HBox, VBox}
+import javafx.animation.{PauseTransition, TranslateTransition}
 import javafx.util.Duration
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
+
+import java.util.concurrent.Executors
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.{Success, Failure}
-import com.dashayne.cryptodash.model.{BalancesManager, ApiClient, WalletManager}
-import java.math.BigDecimal
-import java.io.File
-import java.util.concurrent.{Executors, TimeUnit}
+import scala.util.{Failure, Success}
+import com.dashayne.cryptodash.model.{BalancesManager, Token}
+import javafx.fxml.FXMLLoader
+import javafx.scene.{Parent, Scene}
+import javafx.stage.Stage
+import javafx.application.Platform
 
 class WalletMenuController:
 
   @FXML
   private var topContainer: VBox = _
-
   @FXML
   private var walletName: Label = _
-
   @FXML
   private var walletAddress: Label = _
-
   @FXML
   private var ethAmount: Label = _
-
   @FXML
   private var usdAmount: Label = _
-
   @FXML
   private var receiveButton: Button = _
-
   @FXML
   private var sendButton: Button = _
-
   @FXML
   private var exportButton: Button = _
+  @FXML
+  private var logoutButton: Button = _
+  @FXML
+  private var tokenList: VBox = _
 
-  private val apiClient = new ApiClient()
   private val scheduler = Executors.newScheduledThreadPool(1)
-  private var fullWalletAddress: String = "" // Store the full address for copying
+  private var fullWalletAddress: String = ""
+  private var tokens: Seq[Token] = Seq(
+    Token("Ethereum", "ETH", "https://cryptologos.cc/logos/ethereum-eth-logo.png"),
+    Token("Bitcoin", "BTC", "https://cryptologos.cc/logos/bitcoin-btc-logo.png"),
+    Token("Solana", "SOL", "https://cryptologos.cc/logos/solana-sol-logo.png")
+  )
+
+  private val tokenTileCache: mutable.Map[String, (HBox, Label)] = mutable.Map()
 
   def setWalletDetails(name: String, address: String): Unit =
     walletName.setText(name)
     walletAddress.setText(formatAddress(address))
-    fullWalletAddress = address // Save the full address for copying
+    fullWalletAddress = address
+    initializeTokenTiles()
+    fetchAndSetTokenPrices()
     fetchAndSetEthereumBalance(address)
-    schedulePeriodicBalanceCheck(address)
+    schedulePeriodicUpdates(address)
 
   @FXML
   def initialize(): Unit =
+    println("Initializing WalletMenuController...")
     playSlideDownAnimation()
     receiveButton.setOnAction(_ => handleCopyAddress())
-    exportButton.setOnAction(_ => handleExportPrivateKey())
+    exportButton.setOnAction(_ => println("Export wallet private key."))
+    logoutButton.setOnAction(_ => handleLogout())
+
+  private def handleLogout(): Unit =
+    println("Logging out...")
+    Platform.runLater(() => {
+      val loader = new FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/CreateWallet.fxml"))
+      val root: Parent = loader.load()
+      val stage = logoutButton.getScene.getWindow.asInstanceOf[Stage]
+      stage.setScene(new Scene(root))
+    })
 
   private def playSlideDownAnimation(): Unit =
-    // Start with the top container off-screen
-    topContainer.setTranslateY(-topContainer.getPrefHeight)
+    topContainer.setTranslateY(-(topContainer.getPrefHeight * 2))
 
-    // Create a TranslateTransition for the slide-down effect
-    val slideDown = new TranslateTransition()
-    slideDown.setNode(topContainer)
-    slideDown.setDuration(Duration.millis(1500)) // Animation duration (1.5 seconds)
-    slideDown.setFromY(-topContainer.getPrefHeight) // Start position
-    slideDown.setToY(0) // Final position (on-screen)
-    slideDown.setCycleCount(1) // Play only once
+    val slideDown = new TranslateTransition(Duration.millis(1000), topContainer)
+    slideDown.setFromY(-(topContainer.getPrefHeight))
+    slideDown.setToY(0)
+    slideDown.setCycleCount(1)
     slideDown.setAutoReverse(false)
 
-    // Play the animation
-    slideDown.play()
+    val pause = new PauseTransition(Duration.millis(500)) // Add a short delay
+    pause.setOnFinished(_ => slideDown.play())
+    pause.play()
 
-  private def handleCopyAddress(): Unit =
-    val clipboard = Toolkit.getDefaultToolkit.getSystemClipboard
-    val selection = new StringSelection(fullWalletAddress) // Copy the full address
-    clipboard.setContents(selection, null)
-    println(s"Copied address to clipboard: $fullWalletAddress")
+  private def initializeTokenTiles(): Unit =
+    tokens.foreach { token =>
+      val tokenTile = TokenTileFactory.createTokenTile(token)
+      tokenTileCache(token.symbol) = (tokenTile.tile, tokenTile.priceLabel)
+      tokenList.getChildren.add(tokenTile.tile)
+    }
 
-  private def handleExportPrivateKey(): Unit =
-    println(s"Exporting private key for wallet address: $fullWalletAddress")
-    val walletFile = findWalletFile(fullWalletAddress)
-    walletFile match
-      case Some(file) =>
-        WalletManager.loadWallet("securepassword", file.getName) match
-          case Success(credentials) =>
-            val privateKey = credentials.getEcKeyPair.getPrivateKey.toString(16)
-            println(s"Private Key: $privateKey")
-          case Failure(ex) =>
-            println(s"Failed to load wallet: ${ex.getMessage}")
-      case None =>
-        println(s"Wallet file not found for address: $fullWalletAddress")
-
-  private def findWalletFile(address: String): Option[File] =
-    val walletDir = new File(System.getProperty("user.home") + "/cryptodash_wallets")
-    if walletDir.exists() && walletDir.isDirectory then
-      walletDir.listFiles().find(file => file.getName.contains(address.drop(2))) // Match address without "0x"
-    else None
+  private def fetchAndSetTokenPrices(): Unit =
+    Future:
+      BalancesManager.getAllTokenPrices(tokens.map(_.symbol))
+    .onComplete:
+      case Success(Right(updatedTokens)) =>
+        tokens = updatedTokens
+        updateTokenPrices()
+      case Success(Left(error)) =>
+        println(s"Failed to fetch token prices: $error")
+      case Failure(ex) =>
+        println(s"Error fetching token prices: ${ex.getMessage}")
 
   private def fetchAndSetEthereumBalance(address: String): Unit =
     Future:
@@ -107,52 +115,41 @@ class WalletMenuController:
       case Success(balanceTry) =>
         balanceTry match
           case Success(balance) =>
-            val formattedBalance = f"$balance%.6f ETH"
-            javafx.application.Platform.runLater:
-              () => ethAmount.setText(formattedBalance)
-            fetchAndDisplayUSDValue(balance)
+            val ethPrice = tokens.find(_.symbol == "ETH").map(_.price).getOrElse(BigDecimal(0))
+            val totalUsdValue = BigDecimal(balance.toString) * ethPrice
+            val cleanedBalance = new java.math.BigDecimal(balance.toString).stripTrailingZeros().toPlainString()
+            Platform.runLater(() => {
+              ethAmount.setText(s"$cleanedBalance ETH")
+              usdAmount.setText(f"$$${totalUsdValue}%.2f")
+            })
           case Failure(ex) =>
             println(s"Failed to fetch Ethereum balance: ${ex.getMessage}")
-            javafx.application.Platform.runLater:
-              () => ethAmount.setText("Error fetching balance")
       case Failure(ex) =>
-        println(s"Error in fetching balance task: ${ex.getMessage}")
-        javafx.application.Platform.runLater:
-          () => ethAmount.setText("Error fetching balance")
+        println(s"Error fetching Ethereum balance: ${ex.getMessage}")
 
-  private def fetchAndDisplayUSDValue(balance: BigDecimal): Unit =
-    Future:
-      apiClient.getEthPrice()
-    .onComplete:
-      case Success(priceTry) =>
-        priceTry match
-          case Right(price) =>
-            val totalValue = BalancesManager.calculateTotalValueInUSD(balance, price)
-            val formattedValue = f"$$${totalValue}%.2f"
-            println(price)
-            javafx.application.Platform.runLater:
-              () => usdAmount.setText(formattedValue)
-          case Left(error) =>
-            println(s"Failed to fetch ETH price: $error")
-            javafx.application.Platform.runLater:
-              () => usdAmount.setText("Error fetching price")
-      case Failure(ex) =>
-        println(s"Error in fetching ETH price task: ${ex.getMessage}")
-        javafx.application.Platform.runLater:
-          () => usdAmount.setText("Error fetching price")
+  private def updateTokenPrices(): Unit =
+    Platform.runLater(() => {
+      tokens.foreach { token =>
+        tokenTileCache.get(token.symbol).foreach { case (_, priceLabel) =>
+          priceLabel.setText(f"$$${token.price}%.2f")
+        }
+      }
+    })
 
-  private def schedulePeriodicBalanceCheck(address: String): Unit =
+  private def schedulePeriodicUpdates(address: String): Unit =
     scheduler.scheduleAtFixedRate(
       () =>
-        javafx.application.Platform.runLater:
-          () => fetchAndSetEthereumBalance(address),
-      5, // Initial delay
-      5, // Period
-      TimeUnit.SECONDS
+        Platform.runLater(() => {
+          fetchAndSetTokenPrices()
+          fetchAndSetEthereumBalance(address)
+        }),
+      5,
+      5,
+      java.util.concurrent.TimeUnit.SECONDS
     )
 
-  def stopScheduler(): Unit =
-    scheduler.shutdown()
+  private def handleCopyAddress(): Unit =
+    println(s"Copied address to clipboard: $fullWalletAddress")
 
   private def formatAddress(address: String): String =
     if address.length > 10 then

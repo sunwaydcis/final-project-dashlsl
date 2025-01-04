@@ -1,12 +1,24 @@
 /* Button styling for the "Create Wallet" button */
 .create-wallet-button {
     -fx-background-color: #181818;
-    -fx-background-radius: 16px;
-    -fx-pref-height: 60px;
-    -fx-pref-width: 355px;
     -fx-text-fill: #5f5f5f;
     -fx-alignment: center;
     -fx-text-alignment: center;
+    -fx-cursor: hand;
+}
+
+.create-wallet-button:hover {
+    -fx-background-color: #232323;
+}
+
+.wallet-name-input {
+    -fx-background-color: #181818;
+    -fx-background-radius: 8;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #5f5f5f;
+    -fx-border-color: #393939;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
 }
 
 /* General styling for other buttons */
@@ -45,8 +57,56 @@
     -fx-background-radius: 8px; /* Rounded corners at the bottom */
     -fx-border-radius: 8px;
     -fx-cursor: hand;
+    -fx-padding: 16px;
 }
 
 .crypto-token-tile:hover {
     -fx-border-color: #232323;
+}
+
+.crypto-token-name {
+    -fx-font-size: 14px;
+    -fx-text-fill: #707070;
+}
+
+.crypto-token-price {
+    -fx-font-size: 18px;
+    -fx-text-fill: #c6c6c6;
+}
+
+.logo-create {
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #7F00FF, #E100FF); /* Default fill color for icons */
+    -fx-scale-x: 0.4;
+    -fx-scale-y: 0.4;
+}
+
+.wallet-list-item {
+    -fx-background-color: #222222;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-family: "Open Sauce One Regular";
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity; /* Allow the button to expand */
+    -fx-pref-width: 100%; /* Dynamically fill width */
+}
+
+.wallet-list-item:hover {
+    -fx-background-color: #444444;
+}
+
+.scroll-pane {
+    -fx-background-color: #111111; /* Set the background color */
+    -fx-background-insets: 0; /* Prevent padding around background */
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #111111; /* Match the viewport to the scroll-pane background */
+}
+
+.scroll-pane .scroll-bar {
+    -fx-opacity: 0; /* Hide scrollbars */
+    -fx-max-width: 0; /* Ensure no space is left for the scrollbars */
+    -fx-max-height: 0;
 }
