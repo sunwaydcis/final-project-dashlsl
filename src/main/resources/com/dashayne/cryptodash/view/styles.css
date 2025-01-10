@@ -89,7 +89,18 @@
     -fx-padding: 8px;
     -fx-cursor: hand;
     -fx-max-width: Infinity; /* Allow the button to expand */
-    -fx-pref-width: 100%; /* Dynamically fill width */
+    /*-fx-pref-width: 100%; !* Dynamically fill width *!*/
+}
+
+.delete-wallet-button {
+    -fx-background-color: red;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-family: "Open Sauce One Regular";
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity; /* Allow the button to expand */
 }
 
 .wallet-list-item:hover {

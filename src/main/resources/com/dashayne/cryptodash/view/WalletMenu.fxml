@@ -104,7 +104,7 @@
                                  <Font size="20.0" />
                               </font>
                            </Button>
-                           <Label fx:id="walletAddress11" alignment="CENTER" prefHeight="20.0" prefWidth="161.0" text="Recieve" textFill="#eeeeee">
+                           <Label fx:id="walletAddress11" alignment="CENTER" prefHeight="20.0" prefWidth="161.0" text="Receive" textFill="#eeeeee">
                               <font>
                                  <Font name="Open Sauce One Regular" size="14.0" />
                               </font>

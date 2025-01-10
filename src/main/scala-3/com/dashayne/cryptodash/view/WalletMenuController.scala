@@ -63,6 +63,7 @@ class WalletMenuController:
 
   private def handleLogout(): Unit =
     println("Logging out...")
+    scheduler.shutdown()
     Platform.runLater(() => {
       val loader = new FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/CreateWallet.fxml"))
       val root: Parent = loader.load()

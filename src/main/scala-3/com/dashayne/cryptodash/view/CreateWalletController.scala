@@ -1,8 +1,9 @@
 package com.dashayne.cryptodash.view
 
 import javafx.fxml.FXML
-import javafx.scene.control.{Button, TextField}
-import javafx.scene.layout.VBox
+import javafx.scene.control.{Button, TextField, ButtonType}
+import javafx.scene.layout.{HBox, VBox}
+import javafx.scene.control.ButtonType.OK
 import javafx.stage.Stage
 import scalafx.scene.Scene
 import scalafx.Includes.*
@@ -62,12 +63,28 @@ class CreateWalletController:
 
           if walletAddress.nonEmpty then
             val wallet = new Wallet(walletFile.getName, walletAddress, walletName)
+
+            // Create an HBox to hold the wallet button and delete button
+            val walletEntry = new HBox()
+            walletEntry.setSpacing(5) // Reduce spacing between buttons
+            walletEntry.setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 2 0 2 0;") // Adjust alignment and padding
+
+            // Wallet button
             val button = new Button(walletName)
             button.setPrefWidth(300)
             button.getStyleClass.add("wallet-list-item")
             button.setOnMouseClicked((_: MouseEvent) => handleWalletSelection(wallet))
-            walletList.getChildren.add(button)
+
+            // Delete button
+            val deleteButton = new Button("X")
+            deleteButton.setPrefWidth(10)
+            deleteButton.getStyleClass.add("delete-wallet-button")
+            deleteButton.setOnAction(_ => handleWalletDeletion(walletFile, wallet))
+
+            walletEntry.getChildren.addAll(button, deleteButton)
+            walletList.getChildren.add(walletEntry)
         }
+
 
   private def handleWalletSelection(wallet: Wallet): Unit =
     val loader = new javafx.fxml.FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/WalletMenu.fxml"))
@@ -77,4 +94,17 @@ class CreateWalletController:
     val controller = loader.getController[WalletMenuController]
     controller.setWallet(wallet)
 
+  private def handleWalletDeletion(walletFile: File, wallet: Wallet): Unit =
+    val alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION)
+    alert.setTitle("Delete Wallet")
+    alert.setHeaderText("Confirm Deletion")
+    alert.setContentText(s"Are you sure you want to delete the wallet: ${wallet.getName}?")
 
+    val result = alert.showAndWait()
+
+    if result.isPresent && result.get == javafx.scene.control.ButtonType.OK then
+      if walletFile.exists() && walletFile.delete() then
+        println(s"Wallet ${wallet.getName} deleted successfully.")
+        loadWalletList() // Refresh the wallet list after deletion
+      else
+        println(s"Failed to delete wallet ${wallet.getName}.")
