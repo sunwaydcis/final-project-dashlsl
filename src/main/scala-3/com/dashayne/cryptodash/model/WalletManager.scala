@@ -9,30 +9,6 @@ object WalletManager:
   private val walletDirectory = new File(System.getProperty("user.home") + "/cryptodash_wallets")
   if (!walletDirectory.exists()) walletDirectory.mkdir()
 
-
-  private var loggedInWalletFileName: Option[String] = None
-  private var loggedInWalletAddress: Option[String] = None
-
-  /**
-   * Set the logged-in wallet file name.
-   *
-   * @param fileName The wallet file name.
-   */
-  def setLoggedInWalletFileName(fileName: String): Unit =
-    loggedInWalletFileName = Some(fileName)
-
-  /**
-   * Get the logged-in wallet file name.
-   *
-   * @return The wallet file name if set.
-   */
-  def getLoggedInWalletFileName: Option[String] = loggedInWalletFileName
-  
-  def setLoggedInWalletAddress(address: String): Unit =
-    loggedInWalletAddress = Some(address)
-    
-  def getLoggedInWalletAddress: Option[String] = loggedInWalletAddress
-
   /**
    * Create a new wallet with a name.
    * @param password The password for the wallet.
@@ -64,7 +40,7 @@ object WalletManager:
    * @param walletFileName The name of the wallet file.
    * @return Wallet credentials on success.
    */
-  def loadWallet(password: String, walletFileName: String): Try[Credentials] =
+  private def loadWallet(password: String, walletFileName: String): Try[Credentials] =
     Try(WalletUtils.loadCredentials(password, new File(walletDirectory, walletFileName)))
 
   /**

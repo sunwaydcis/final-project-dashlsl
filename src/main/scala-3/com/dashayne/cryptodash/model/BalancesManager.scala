@@ -37,7 +37,9 @@ object BalancesManager:
         Convert.fromWei(new BigDecimal(balanceInWei), Convert.Unit.ETHER)
 
   def getAllTokenPrices(symbols: Seq[String]): Either[String, Seq[Token]] =
-    val apiUrl = s"$baseUrl?symbols=${symbols.mkString("&symbols=")}"
+    val updatedSymbols = "ETH" +: symbols.distinct
+
+    val apiUrl = s"$baseUrl?symbols=${updatedSymbols.mkString("&symbols=")}"
     val headers = Map(
       "accept" -> "application/json",
       "Authorization" -> s"Bearer $apiKey"
@@ -47,11 +49,19 @@ object BalancesManager:
         Try:
           val json = ujson.read(response)
           val data = json("data").arr
-          data.map { tokenData =>
+
+          data.flatMap { tokenData =>
             val symbol = tokenData("symbol").str
-            val price = BigDecimal(tokenData("prices")(0)("value").str)
-            val lastUpdated = tokenData("prices")(0)("lastUpdatedAt").str
-            Token(name = symbol, symbol = symbol, imageUrl = "", price = price, lastUpdated = lastUpdated)
+            val prices = tokenData("prices").arr
+
+            if prices.nonEmpty then
+              val price = BigDecimal(prices(0)("value").str)
+              val lastUpdated = prices(0)("lastUpdatedAt").str
+              Some(Token(name = symbol, symbol = symbol, imageUrl = "", price = price, lastUpdated = lastUpdated))
+            else
+              println(s"Skipping token $symbol due to empty prices array.")
+              Some(Token(name = symbol, symbol = symbol, imageUrl = "", price = BigDecimal(0), invalid = true))
           }.toSeq
         .toEither.left.map(ex => s"Failed to parse JSON: ${ex.getMessage}")
       case Left(error) => Left(error)
+

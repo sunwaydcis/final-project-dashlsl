@@ -21,6 +21,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq("org.scala-lang.modules" %% "scala-xml" % "2.1.0"),
     libraryDependencies ++= Seq("com.lihaoyi" %% "ujson" % "2.0.0"),
 
+
       Compile / resourceDirectory := baseDirectory.value / "src" / "main" / "resources",
     Compile / resourceGenerators += Def.task {
       val resources = (Compile / resourceDirectory).value

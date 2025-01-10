@@ -5,15 +5,17 @@ import javafx.scene.control.{Button, TextField}
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import scalafx.scene.Scene
-import scalafx.Includes._
+import scalafx.Includes.*
 import org.web3j.crypto.Credentials
-import com.dashayne.cryptodash.model.WalletManager
+import com.dashayne.cryptodash.model.{Wallet, WalletManager}
 import scalafx.scene.control.Alert
 import scalafx.scene.control.Alert.AlertType
+
 import java.io.File
 import javafx.scene.control.Label
 import javafx.scene.input.MouseEvent
-import scala.util.{Success, Failure}
+
+import scala.util.{Failure, Success}
 
 class CreateWalletController:
 
@@ -56,26 +58,23 @@ class CreateWalletController:
         .filter(_.getName.endsWith(".json"))
         .foreach { walletFile =>
           val walletName = WalletManager.getWalletName(walletFile.getName).getOrElse("Unknown Wallet")
-          val button = new Button(walletName)
-          button.setPrefWidth(300)
-          button.getStyleClass.add("wallet-list-item")
-          button.setOnMouseClicked((_: MouseEvent) => handleWalletSelection(walletFile.getName))
-          walletList.getChildren.add(button)
+          val walletAddress = WalletManager.getWalletAddress("securepassword", walletFile.getName).getOrElse("")
+
+          if walletAddress.nonEmpty then
+            val wallet = new Wallet(walletFile.getName, walletAddress, walletName)
+            val button = new Button(walletName)
+            button.setPrefWidth(300)
+            button.getStyleClass.add("wallet-list-item")
+            button.setOnMouseClicked((_: MouseEvent) => handleWalletSelection(wallet))
+            walletList.getChildren.add(button)
         }
 
-  private def handleWalletSelection(walletFileName: String): Unit =
-    val password = "securepassword"
-    WalletManager.loadWallet(password, walletFileName) match
-      case Success(credentials) =>
-        WalletManager.setLoggedInWalletFileName(walletFileName)
-        WalletManager.setLoggedInWalletAddress(credentials.getAddress)
-        val walletName = WalletManager.getWalletName(walletFileName).getOrElse("Unknown Wallet")
-        val loader = new javafx.fxml.FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/WalletMenu.fxml"))
-        val root = loader.load[javafx.scene.Parent]()
-        val stage = createWalletButton.getScene.getWindow.asInstanceOf[Stage]
-        stage.setScene(new Scene(root))
-        val controller = loader.getController[WalletMenuController]
-        controller.setWalletDetails(walletName, credentials.getAddress)
-      case Failure(ex) =>
-        println(s"Failed to load wallet: ${ex.getMessage}")
+  private def handleWalletSelection(wallet: Wallet): Unit =
+    val loader = new javafx.fxml.FXMLLoader(getClass.getResource("/com/dashayne/cryptodash/view/WalletMenu.fxml"))
+    val root = loader.load[javafx.scene.Parent]()
+    val stage = createWalletButton.getScene.getWindow.asInstanceOf[Stage]
+    stage.setScene(new Scene(root))
+    val controller = loader.getController[WalletMenuController]
+    controller.setWallet(wallet)
+
 

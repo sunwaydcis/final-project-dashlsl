@@ -2,7 +2,7 @@ package com.dashayne.cryptodash.view
 
 import javafx.fxml.FXML
 import javafx.scene.control.{Button, TextField}
-import com.dashayne.cryptodash.model.{BalancesManager, TransactionManager, WalletManager}
+import com.dashayne.cryptodash.model.{BalancesManager, TransactionManager, Wallet, WalletManager}
 import javafx.application.Platform
 
 import scala.util.{Failure, Success, Try}
@@ -20,24 +20,24 @@ class SendTransactionController:
   private var sendButton: Button = _
 
   private var currentBalance: BigDecimal = BigDecimal(0)
+  private var wallet: Wallet = _
+
+  def setWallet(wallet: Wallet): Unit =
+    this.wallet = wallet
+    fetchEthereumBalance()
 
   @FXML
   def initialize(): Unit =
-    fetchEthereumBalance()
     maxButton.setOnAction(_ => handleMax())
     sendButton.setOnAction(_ => handleSend())
 
   private def fetchEthereumBalance(): Unit =
-    WalletManager.getLoggedInWalletAddress match
-      case Some(address) =>
-        BalancesManager.getEthereumBalance(address) match
-          case Success(balance) =>
-            currentBalance = BigDecimal(balance)
-            println(s"Fetched balance: $currentBalance ETH")
-          case Failure(ex) =>
-            println(s"Failed to fetch balance: ${ex.getMessage}")
-      case None =>
-        println("No Wallet Logged in")
+    BalancesManager.getEthereumBalance(wallet.getAddress) match
+      case Success(balance) =>
+        currentBalance = BigDecimal(balance)
+        println(s"Fetched balance: $currentBalance ETH")
+      case Failure(ex) =>
+        println(s"Failed to fetch balance: ${ex.getMessage}")
 
   private def handleMax(): Unit =
     if currentBalance > BigDecimal(0) then
@@ -60,21 +60,36 @@ class SendTransactionController:
       sendTransaction(recipientAddress, amount.get)
 
   private def sendTransaction(recipientAddress: String, amount: BigDecimal): Unit =
-    val senderAddress = WalletManager.getLoggedInWalletAddress.getOrElse("")
-    val privateKey = WalletManager.getPrivateKey("securepassword", WalletManager.getLoggedInWalletFileName.getOrElse(""))
+    val senderAddress = wallet.getAddress
+    val privateKey = WalletManager.getPrivateKey("securepassword", wallet.getFileName)
       .getOrElse(throw new IllegalStateException("Failed to retrieve private key"))
 
     println(s"Creating a send transaction to $recipientAddress for $amount ETH...")
     TransactionManager.sendTransaction(senderAddress, privateKey, recipientAddress, amount) match
       case Success(txHash) =>
         println(s"Transaction successful! Tx hash: $txHash")
+        copyToClipboard(txHash)
+        showAlert("Transaction Successful", s"Your transaction was successful!\nTx Hash: $txHash\n(Copied to clipboard)")
         closeWindow()
       case Failure(ex) =>
         println(s"Transaction failed: ${ex.getMessage}")
+        showAlert("Transaction Failed", s"Failed to complete the transaction: ${ex.getMessage}")
+
+  private def showAlert(title: String, message: String): Unit =
+    val alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION)
+    alert.setTitle(title)
+    alert.setHeaderText(null)
+    alert.setContentText(message)
+    alert.showAndWait()
+
+  private def copyToClipboard(text: String): Unit =
+    val clipboard = javafx.scene.input.Clipboard.getSystemClipboard
+    val content = new javafx.scene.input.ClipboardContent
+    content.putString(text)
+    clipboard.setContent(content)
+    println(s"Copied to clipboard: $text")
+
 
   private def closeWindow(): Unit =
     val stage = sendButton.getScene.getWindow.asInstanceOf[javafx.stage.Stage]
     stage.close()
-
-
-

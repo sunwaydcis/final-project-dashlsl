@@ -5,5 +5,6 @@ case class Token(
                   symbol: String,
                   imageUrl: String,
                   price: BigDecimal = BigDecimal(0), // Default price
-                  lastUpdated: String = "" // Default last updated time
+                  lastUpdated: String = "", // Default last updated time
+                  invalid: Boolean = false
                 )
