@@ -10,7 +10,6 @@ class ApiClient:
 
   /**
    * Make a GET request to the specified URL with optional headers
-   *
    * @param apiUrl The API URL to call
    * @param headers Optional headers to include in the request
    * @return The response body as a String, or an error message
@@ -22,7 +21,6 @@ class ApiClient:
 
   /**
    * Make a POST request to the specified URL with a JSON payload and optional headers
-   *
    * @param apiUrl The API URL to call
    * @param jsonPayload The JSON string to send in the body
    * @param headers Optional headers to include in the request

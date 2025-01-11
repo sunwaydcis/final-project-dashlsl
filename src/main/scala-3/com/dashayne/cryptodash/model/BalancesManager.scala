@@ -27,9 +27,11 @@ object BalancesManager extends Web3Manager:
       Failure(new IllegalArgumentException(s"Invalid Ethereum address: $address"))
     else
       Try:
+        // Fetch balance
         val ethGetBalance: EthGetBalance = web3j
           .ethGetBalance(address, org.web3j.protocol.core.DefaultBlockParameterName.LATEST)
           .send()
+        // Convert the balance from Wei to Ether
         val balanceInWei: BigInteger = ethGetBalance.getBalance
         Convert.fromWei(new BigDecimal(balanceInWei), Convert.Unit.ETHER)
 
@@ -43,10 +45,9 @@ object BalancesManager extends Web3Manager:
     val updatedSymbols = "ETH" +: symbols.distinct
     val apiUrl = s"$baseUrl?symbols=${updatedSymbols.mkString("&symbols=")}"
     val headers = Map(
-      "accept" -> "application/json",
-      "Authorization" -> s"Bearer $apiKey"
+      "accept" -> "application/json", // Accept JSON responses
+      "Authorization" -> s"Bearer $apiKey" // API key for authentication
     )
-
     apiClient.get(apiUrl, headers) match
       case Right(response) =>
         Try:

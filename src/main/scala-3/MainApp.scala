@@ -5,9 +5,10 @@ import javafx.fxml.FXMLLoader
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.Scene
-import scalafx.Includes._
+import scalafx.Includes.*
 import scalafx.scene.layout.AnchorPane
 import javafx.scene as jfxs
+import scalafx.scene.image.Image
 
 object MainApp extends JFXApp3:
 
@@ -17,8 +18,11 @@ object MainApp extends JFXApp3:
       val rootPane: AnchorPane = loader.load[jfxs.layout.AnchorPane]() // Explicitly define rootPane
       stage = new PrimaryStage:
         title = "Dash Wallet"
+        icons += new Image(getClass.getResource(
+          "/images/logo.png").toExternalForm)
         scene = new Scene:
           root = rootPane // Use explicitly defined rootPane here
+      stage.setResizable(false)
     catch
       case ex: Exception =>
         ex.printStackTrace()
