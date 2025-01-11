@@ -3,6 +3,7 @@ package com.dashayne.cryptodash.view
 import javafx.fxml.FXML
 import javafx.scene.control.{Button, TextField}
 import com.dashayne.cryptodash.model.{BalancesManager, TransactionManager, Wallet, WalletManager}
+import com.dashayne.cryptodash.utils.Utils.{copyToClipboard, showAlert}
 import javafx.application.Platform
 
 import scala.util.{Failure, Success, Try}
@@ -74,20 +75,6 @@ class SendTransactionController:
       case Failure(ex) =>
         println(s"Transaction failed: ${ex.getMessage}")
         showAlert("Transaction Failed", s"Failed to complete the transaction: ${ex.getMessage}")
-
-  private def showAlert(title: String, message: String): Unit =
-    val alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION)
-    alert.setTitle(title)
-    alert.setHeaderText(null)
-    alert.setContentText(message)
-    alert.showAndWait()
-
-  private def copyToClipboard(text: String): Unit =
-    val clipboard = javafx.scene.input.Clipboard.getSystemClipboard
-    val content = new javafx.scene.input.ClipboardContent
-    content.putString(text)
-    clipboard.setContent(content)
-    println(s"Copied to clipboard: $text")
 
 
   private def closeWindow(): Unit =

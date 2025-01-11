@@ -12,6 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 import com.dashayne.cryptodash.model.{BalancesManager, Favourites, Token, Wallet, WalletManager}
+import com.dashayne.cryptodash.utils.Utils.{copyToClipboard, showAlert}
 import javafx.fxml.FXMLLoader
 import javafx.scene.{Parent, Scene}
 import javafx.stage.Stage
@@ -55,11 +56,11 @@ class WalletMenuController:
   def initialize(): Unit =
     println("Initializing WalletMenuController...")
     playSlideDownAnimation()
-    receiveButton.setOnAction(_ => handleCopyAddress())
-    sendButton.setOnAction(_ => openSendTransactionView())
-    exportButton.setOnAction(_ => handleExport())
     logoutButton.setOnAction(_ => handleLogout())
     addTokenButton.setOnAction(_ => openAddTokenView())
+    exportButton.setOnAction(_ => handleExport())
+    receiveButton.setOnAction(_ => handleCopyAddress())
+    sendButton.setOnAction(_ => openSendTransactionView())
 
   private def handleLogout(): Unit =
     println("Logging out...")
@@ -103,13 +104,14 @@ class WalletMenuController:
 
     WalletManager.getPrivateKey(password, wallet.getFileName) match
       case Success(privateKey) =>
-        val clipboard = Clipboard.getSystemClipboard
-        val content = new ClipboardContent
-        content.putString(privateKey)
-        clipboard.setContent(content)
-        println(s"Private key for wallet '${wallet.getName}' copied to clipboard!")
+        copyToClipboard(privateKey)
+        showAlert("Copied Private Key", "You have copied your Private key. Please do not share this as it is full access to your account.")
       case Failure(ex) =>
         println(s"Failed to export private key for wallet '${wallet.getName}': ${ex.getMessage}")
+
+  private def handleCopyAddress(): Unit =
+    copyToClipboard(wallet.getAddress)
+    showAlert("Copied Wallet Address", "Your Wallet Address was Successfully Copied to Clipboard")
 
 
   private def openSendTransactionView(): Unit =
@@ -254,14 +256,6 @@ class WalletMenuController:
       12,
       java.util.concurrent.TimeUnit.SECONDS
     )
-
-  private def handleCopyAddress(): Unit =
-    val clipboard = Clipboard.getSystemClipboard
-    val content = new ClipboardContent
-    content.putString(wallet.getAddress) // Copy the wallet address to clipboard
-    clipboard.setContent(content)
-    println(s"Copied address to clipboard: ${wallet.getAddress}")
-
 
   private def formatAddress(address: String): String =
     if address.length > 10 then

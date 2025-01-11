@@ -1,28 +1,32 @@
 package com.dashayne.cryptodash.model
 
 import org.web3j.crypto.{Credentials, RawTransaction, TransactionEncoder}
-import org.web3j.protocol.Web3j
 import org.web3j.protocol.core.methods.request.Transaction
-import org.web3j.protocol.core.methods.response.EthEstimateGas
-import org.web3j.protocol.http.HttpService
-import org.web3j.utils.Convert
+import org.web3j.protocol.core.methods.response.{EthEstimateGas, EthSendTransaction}
 import org.web3j.tx.gas.DefaultGasProvider
-import org.web3j.utils.Numeric
+import org.web3j.utils.{Convert, Numeric}
 
 import java.math.BigInteger
 import scala.util.{Failure, Success, Try}
 
-object TransactionManager:
+object TransactionManager extends Web3Manager:
 
-  private val web3j: Web3j = Web3j.build(new HttpService("https://eth-sepolia.g.alchemy.com/v2/v4Q7lRu_eLH3PV_jDZFU823z8Xk9oDL4"))
-
+  /**
+   * Send a transaction from the sender to the recipient.
+   *
+   * @param senderAddress Sender's Ethereum address.
+   * @param privateKey Sender's private key.
+   * @param recipientAddress Recipient's Ethereum address.
+   * @param amount Amount to send in Ether.
+   * @return Transaction hash as a Try[String].
+   */
   def sendTransaction(
                        senderAddress: String,
                        privateKey: String,
                        recipientAddress: String,
                        amount: BigDecimal
                      ): Try[String] =
-    if !BalancesManager.isValidEthereumAddress(recipientAddress) then
+    if !isValidEthereumAddress(recipientAddress) then
       Failure(new IllegalArgumentException(s"Invalid recipient address: $recipientAddress"))
     else
       Try:
@@ -46,17 +50,21 @@ object TransactionManager:
         val signedMessage = TransactionEncoder.signMessage(rawTransaction, credentials)
         val hexValue = Numeric.toHexString(signedMessage)
 
-        val sendTransactionResponse = web3j.ethSendRawTransaction(hexValue).send()
+        val sendTransactionResponse: EthSendTransaction = web3j.ethSendRawTransaction(hexValue).send()
         if sendTransactionResponse.hasError then
           throw new RuntimeException(s"Transaction failed: ${sendTransactionResponse.getError.getMessage}")
         else
           sendTransactionResponse.getTransactionHash
 
-  private def estimateGas(
-                           senderAddress: String,
-                           recipientAddress: String,
-                           value: BigInteger
-                         ): Try[BigInteger] =
+  /**
+   * Estimate the gas required for a transaction.
+   *
+   * @param senderAddress Sender's Ethereum address.
+   * @param recipientAddress Recipient's Ethereum address.
+   * @param value Transaction value in Wei.
+   * @return Estimated gas limit as a Try[BigInteger].
+   */
+  private def estimateGas(senderAddress: String, recipientAddress: String, value: BigInteger): Try[BigInteger] =
     Try:
       val transaction = Transaction.createEtherTransaction(
         senderAddress,
