@@ -19,6 +19,7 @@ object MainApp extends JFXApp3:
         title = "Dash Wallet"
         scene = new Scene:
           root = rootPane // Use explicitly defined rootPane here
+      stage.setResizable(false)
     catch
       case ex: Exception =>
         ex.printStackTrace()
