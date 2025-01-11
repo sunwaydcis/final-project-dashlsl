@@ -16,6 +16,7 @@ object Favourites:
     writer.close()
 
   // Load tokens.json into memory
+  // tokens.json contains metadata about supported tokens
   private val tokens: Map[String, Map[String, String]] =
     Try {
       val source = Source.fromInputStream(getClass.getResourceAsStream("/com/dashayne/cryptodash/view/tokens.json"))
@@ -29,6 +30,11 @@ object Favourites:
       Map.empty
     }
 
+  /**
+   * Retrieves the list of favourite tokens for a specific Ethereum address.
+   * @param address The Ethereum address.
+   * @return A Try containing a sequence of favourite token keys or an error if any issue occurs.
+   */
   def getFavouritesByAddress(address: String): Try[Seq[String]] =
     Try:
       val json = ujson.read(Source.fromFile(favouritesFile).mkString)
@@ -36,6 +42,12 @@ object Favourites:
         case Some(favList) => favList.arr.map(_.str).toSeq
         case None => Seq.empty
 
+  /**
+   * Adds a token to the list of favourites for a specific Ethereum address.
+   * @param address  The Ethereum address.
+   * @param tokenKey The key of the token to add to favourites.
+   * @return A Try indicating success or failure.
+   */
   def addFavourite(address: String, tokenKey: String): Try[Unit] =
     if !tokens.contains(tokenKey) then
       Failure(new IllegalArgumentException(s"Invalid token key: $tokenKey"))
@@ -55,6 +67,12 @@ object Favourites:
         writer.write(json.render(2)) // Pretty print the updated JSON
         writer.close()
 
+  /**
+   * Removes a token from the list of favourites for a specific Ethereum address.
+   * @param address  The Ethereum address.
+   * @param tokenKey The key of the token to remove from favourites.
+   * @return A Try indicating success or failure.
+   */
   def removeFavourite(address: String, tokenKey: String): Try[Unit] =
     Try:
       val json = ujson.read(Source.fromFile(favouritesFile).mkString)
@@ -71,8 +89,17 @@ object Favourites:
       writer.close()
 
 
+  /**
+   * Retrieves metadata about a specific token using its key.
+   * @param tokenKey The key of the token.
+   * @return An Option containing a Map with token details, or None if the key is invalid.
+   */
   def getTokenDetails(tokenKey: String): Option[Map[String, String]] =
     tokens.get(tokenKey)
 
+  /**
+   * Retrieves metadata for all available tokens.
+   * @return A Map where each key is a token key, and the value is a Map of token details.
+   */
   def getAllTokens: Map[String, Map[String, String]] =
     tokens

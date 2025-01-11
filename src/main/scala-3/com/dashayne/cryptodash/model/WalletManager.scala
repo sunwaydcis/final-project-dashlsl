@@ -26,7 +26,6 @@ object WalletManager:
 
   /**
    * Get the private key for a wallet.
-   *
    * @param password       The wallet password.
    * @param walletFileName The wallet file name.
    * @return The private key on success.

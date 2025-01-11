@@ -14,8 +14,17 @@ import scala.util.{Failure, Success, Try}
 
 object TransactionManager:
 
+  // Initialize a Web3j instance to interact with the Ethereum blockchain
   private val web3j: Web3j = Web3j.build(new HttpService("https://eth-sepolia.g.alchemy.com/v2/v4Q7lRu_eLH3PV_jDZFU823z8Xk9oDL4"))
 
+  /**
+   * Sends an Ethereum transaction from the sender to the recipient.
+   * @param senderAddress    The sender's Ethereum address.
+   * @param privateKey       The private key of the sender's wallet.
+   * @param recipientAddress The recipient's Ethereum address.
+   * @param amount           The amount to send, in Ether.
+   * @return A Try containing the transaction hash on success, or an error on failure.
+   */
   def sendTransaction(
                        senderAddress: String,
                        privateKey: String,
@@ -52,6 +61,13 @@ object TransactionManager:
         else
           sendTransactionResponse.getTransactionHash
 
+  /**
+   * Estimates the gas required for a transaction.
+   * @param senderAddress    The sender's Ethereum address.
+   * @param recipientAddress The recipient's Ethereum address.
+   * @param value            The amount of Ether being transferred, in Wei.
+   * @return A Try containing the estimated gas limit, or an error on failure.
+   */
   private def estimateGas(
                            senderAddress: String,
                            recipientAddress: String,
